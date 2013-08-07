@@ -1,4 +1,4 @@
-@(withRead:TestResult, without:TestResult)
+@(withRead:TestResult, without:TestResult, raw:TestResult)
 
 @main("Results") {
 
@@ -28,5 +28,17 @@
 		<dt>Diff</dt>
 		<dd>@(without.after-without.before)</dd>
 	</dl>
+
+	<h2>Raw</h2>
+	<dl>
+		<dt>Before</dt>
+		<dd>@raw.before</dd>
+
+		<dt>After</dt>
+		<dd>@raw.after</dd>		
+
+		<dt>Diff</dt>
+		<dd>@(raw.after-raw.before)</dd>
+	</dl>	
 	
 }

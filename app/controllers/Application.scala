@@ -21,48 +21,28 @@ object Application extends Controller with DatabaseAccess {
 
     def test() = Action {
 
-        // Cleaning the database
-        database.withSession { implicit session:scala.slick.driver.MySQLDriver.simple.Session =>
-            Query(ArticleDAO).delete
-        }
+        // With read
+        ArticleDAO.clean
+        val beforeWithRead = System.currentTimeMillis()
+        ArticleDAO.insertWithRead
+        val afterWithRead = System.currentTimeMillis()
 
-        var beforeWithRead:Long = 0L
-        var afterWithRead:Long = 0L
-        var beforeWithoutRead:Long = 0L
-        var afterWithoutRead:Long = 0L
+        // Without read
+        ArticleDAO.clean
+        val beforeWithoutRead = System.currentTimeMillis()
+        ArticleDAO.insertWithoutRead
+        val afterWithoutRead = System.currentTimeMillis()
 
-        database.withSession { implicit session:scala.slick.driver.MySQLDriver.simple.Session =>
-            beforeWithRead = System.currentTimeMillis()
-                for (i <- 0 to 1000) {
-
-                    if ((Query(ArticleDAO).filter(_.name === "With - " + (i%500).toString).list.length) == 0) {
-                        ArticleDAO.insert(Article(None, "With - " + (i % 500).toString))
-                    }
-                }
-            afterWithRead = System.currentTimeMillis()
-        }
-
-        // Cleaning the database
-        database.withSession { implicit session:scala.slick.driver.MySQLDriver.simple.Session =>
-            Query(ArticleDAO).delete
-        }
-
-        // Inserting just ignoring the errors
-        database.withSession { implicit session:scala.slick.driver.MySQLDriver.simple.Session =>
-            beforeWithoutRead = System.currentTimeMillis()
-            for (i <- 0 to 1000) {
-                try {
-                    ArticleDAO.insert(Article(None, "Without - " + (i % 500).toString))
-                } catch {
-                    case _:Throwable => Unit
-                }
-            }
-            afterWithoutRead = System.currentTimeMillis()
-        }
+        // Raw inserts
+        ArticleDAO.clean
+        val beforeRaw = System.currentTimeMillis()
+        ArticleDAO.insertRaw
+        val afterRaw = System.currentTimeMillis()
 
         Ok(views.html.result(
-            TestResult(beforeWithRead, afterWithRead),
-            TestResult(beforeWithoutRead, afterWithoutRead)
+            TestResult(beforeWithRead, afterWithRead),            
+            TestResult(beforeWithoutRead, afterWithoutRead),
+            TestResult(beforeRaw, afterRaw)
         ))
     }
 }
