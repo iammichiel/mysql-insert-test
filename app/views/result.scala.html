@@ -1,0 +1,32 @@
+@(withRead:TestResult, without:TestResult)
+
+@main("Results") {
+
+	<a href="@routes.Application.test()">Relaunch test</a>
+
+	<h2>With</h2>
+	<dl>
+		<dt>Before</dt>
+		<dd>@withRead.before</dd>
+
+		<dt>After</dt>
+		<dd>@withRead.after</dd>
+
+		<dt>Diff</dt>
+		<dd>@(withRead.after-withRead.before)</dd>		
+	</dl>
+
+
+	<h2>Without</h2>
+	<dl>
+		<dt>Before</dt>
+		<dd>@without.before</dd>
+
+		<dt>After</dt>
+		<dd>@without.after</dd>		
+
+		<dt>Diff</dt>
+		<dd>@(without.after-without.before)</dd>
+	</dl>
+	
+}
